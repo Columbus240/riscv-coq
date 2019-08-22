@@ -47,17 +47,6 @@ Inductive CSR :=
   (* Supervisor Protection and Translation *)
   SATP |
 
-  (* ** Hypervisor-Level CSRs ** *)
-  (* Hypervisor Trap Setup *)
-  HStatus | HEDeleg | HIDeleg | HCounterEn |
-  (* Hypervisor Protection and Translation *)
-  HGATP |
-  (* Hypervisor Counter/Timer Virtualization Registers *)
-  HTimeDelta | HTimeDeltaH |
-  (* Virtual Supervisor Registers *)
-  VSStatus | VSIE | VSTVec | VSScratch | VSEPC | VSCause | VSTVal | VSIP |
-  VSATP |
-
   (* ** Machine-Level CSRs ** *)
   (* Machine Information Registers *)
   MVendorID | MArchID | MImpID | MHartID |
@@ -288,42 +277,6 @@ Definition lookupCSR (x : MachineInt) : option CSR :=
   (**)
   else if Z.eqb x (Ox"180") then
     Some SATP
-  (**)
-  else if Z.eqb x (Ox"600") then
-    Some HStatus
-  else if Z.eqb x (Ox"602") then
-    Some HEDeleg
-  else if Z.eqb x (Ox"603") then
-    Some HIDeleg
-  else if Z.eqb x (Ox"606") then
-    Some HCounterEn
-  (**)
-  else if Z.eqb x (Ox"680") then
-    Some HGATP
-  (**)
-  else if Z.eqb x (Ox"605") then
-    Some HTimeDelta
-  else if Z.eqb x (Ox"615") then
-    Some HTimeDeltaH
-  (**)
-  else if Z.eqb x (Ox"200") then
-    Some VSStatus
-  else if Z.eqb x (Ox"204") then
-    Some VSIE
-  else if Z.eqb x (Ox"205") then
-    Some VSTVec
-  else if Z.eqb x (Ox"240") then
-    Some VSScratch
-  else if Z.eqb x (Ox"241") then
-    Some VSEPC
-  else if Z.eqb x (Ox"242") then
-    Some VSCause
-  else if Z.eqb x (Ox"243") then
-    Some VSTVal
-  else if Z.eqb x (Ox"244") then
-    Some VSIP
-  else if Z.eqb x (Ox"280") then
-    Some VSATP
   (**)
   else if Z.eqb x (Ox"F11") then
     Some MVendorID
