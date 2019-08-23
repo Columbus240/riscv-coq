@@ -48,7 +48,7 @@ hs-to-coq_version_check:
 # export because stack will use this environment var
 export STACK_YAML=$(HS_TO_COQ_DIR)/stack.yaml
 
-HS_SOURCES = $(RISCV_SEMANTICS_DIR)/src/Spec/Decode.hs $(RISCV_SEMANTICS_DIR)/src/Spec/ExecuteI.hs $(RISCV_SEMANTICS_DIR)/src/Spec/ExecuteI64.hs $(RISCV_SEMANTICS_DIR)/src/Spec/ExecuteM.hs $(RISCV_SEMANTICS_DIR)/src/Spec/ExecuteM64.hs
+HS_SOURCES = $(RISCV_SEMANTICS_DIR)/src/Spec/Decode.hs $(RISCV_SEMANTICS_DIR)/src/Spec/ExecuteI.hs $(RISCV_SEMANTICS_DIR)/src/Spec/ExecuteI64.hs $(RISCV_SEMANTICS_DIR)/src/Spec/ExecuteM.hs $(RISCV_SEMANTICS_DIR)/src/Spec/ExecuteM64.hs $(RISCV_SEMANTICS_DIR)/src/Spec/ExecuteA.hs $(RISCV_SEMANTICS_DIR)/src/Spec/ExecuteA64.hs
 PREAMBLES = convert-hs-to-coq/Decode_preamble.v convert-hs-to-coq/Execute_preamble.v
 EDIT_FILES = convert-hs-to-coq/Decode.edits convert-hs-to-coq/General.edits convert-hs-to-coq/Base.edits  convert-hs-to-coq/Execute.edits
 HS_TO_COQ = stack exec hs-to-coq -- -N -i $(RISCV_SEMANTICS_DIR)/src -o ./src --iface-dir ./src
@@ -63,6 +63,7 @@ convert: riscv-semantics_version_check hs-to-coq_version_check $(HS_SOURCES) $(P
 	$(HS_TO_COQ) $(EXECUTE_OPTS) $(RISCV_SEMANTICS_DIR)/src/Spec/ExecuteM64.hs
 	$(HS_TO_COQ) $(EXECUTE_OPTS) $(RISCV_SEMANTICS_DIR)/src/Spec/ExecuteA.hs
 	$(HS_TO_COQ) $(EXECUTE_OPTS) $(RISCV_SEMANTICS_DIR)/src/Spec/ExecuteA64.hs
+	$(HS_TO_COQ) $(EXECUTE_OPTS) $(RISCV_SEMANTICS_DIR)/src/Spec/CSR.hs
 
 
 # coq-to-other languages conversion:
