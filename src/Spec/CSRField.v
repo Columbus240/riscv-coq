@@ -4,10 +4,6 @@
    CSR to be able to prove, that software actually ignores them. (As it
    should) *)
 
-(* TODO: Find out the similarities between mstatus, sstatus and vsstatus.
-   It is important to find out which fields are shared between them.
-*)
-
 Inductive CSRField :=
   ustatus_0 | UPIE | ustatus_1 | UIE | (* ustatus *)
   uie_0 | UEIE | uie_1 | UTIE | uie_2 | USIE | (* uie *)
@@ -91,7 +87,7 @@ Inductive CSRField :=
   PMP15Cfg | PMP15Addr | PMP15Null |
   (* pmpcfg[0-3], pmpaddr[0-15] *)
 
-  MCycle | MInstRet (* mcycle, minstret *)
+  MCycle | MInstRet | (* mcycle, minstret *)
   MHPMCounter3 | (* mhpmcounterN *)
   MHPMCounter4 | MHPMCounter5 | MHPMCounter6 | MHPMCounter7 |
   MHPMCounter8 | MHPMCounter9 | MHPMCounter10 | MHPMCounter11 |
@@ -110,11 +106,14 @@ Inductive CSRField :=
   MHPMCounter24H | MHPMCounter25H | MHPMCounter26H | MHPMCounter27H |
   MHPMCounter28H | MHPMCounter29H | MHPMCounter30H | MHPMCounter31H |
 
-  MHPM31 | MHPM30 | MHPM29 | MHPM28 | MHPM27 | MHPM26 | MHPM25 | MHPM24 |
-  MHPM23 | MHPM22 | MHPM21 | MHPM20 | MHPM19 | MHPM18 | MHPM17 | MHPM16 |
-  MHPM15 | MHPM14 | MHPM13 | MHPM12 | MHPM11 | MHPM10 | MHPM9  | MHPM8 |
-  MHPM7  | MHPM6  | MHPM5  | MHPM4  | MHPM3  |
-  MIR | mcountinhibit_0 | MCY | (* mcountinhibit *)
+  MHPMI31 | MHPMI30 | MHPMI29 | MHPMI28 |
+  MHPMI27 | MHPMI26 | MHPMI25 | MHPMI24 |
+  MHPMI23 | MHPMI22 | MHPMI21 | MHPMI20 |
+  MHPMI19 | MHPMI18 | MHPMI17 | MHPMI16 |
+  MHPMI15 | MHPMI14 | MHPMI13 | MHPMI12 |
+  MHPMI11 | MHPMI10 | MHPMI9  | MHPMI8 |
+  MHPMI7  | MHPMI6  | MHPMI5  | MHPMI4 |
+  MHPMI3  | MIRI | mcountinhibit_0 | MCYI | (* mcountinhibit *)
   MHPMEvent3 | (* mhpmeventN *)
   MHPMEvent4 | MHPMEvent5 | MHPMEvent6 | MHPMEvent7 |
   MHPMEvent8 | MHPMEvent9 | MHPMEvent10 | MHPMEvent11 |
@@ -122,28 +121,107 @@ Inductive CSRField :=
   MHPMEvent16 | MHPMEvent17 | MHPMEvent18 | MHPMEvent19 |
   MHPMEvent20 | MHPMEvent21 | MHPMEvent22 | MHPMEvent23 |
   MHPMEvent24 | MHPMEvent25 | MHPMEvent26 | MHPMEvent27 |
-  MHPMEvent28 | MHPMEvent29 | MHPMEvent30 | MHPMEvent31 |
+  MHPMEvent28 | MHPMEvent29 | MHPMEvent30 | MHPMEvent31.
 
+Inductive FieldType := RO | RW | WLRL | WARL | WPRI.
 
-  .
+Definition fieldType (field : CSRField) : FieldType :=
+  match field with
+  | ustatus_0 | ustatus_1 => WPRI
+  | uie_0 | uie_1 | uie_2 => WPRI
+  | UTVecBase | UTVecMode => WARL
 
-(*Inductive CSRField : Type :=
-                MCycle | (* mcycle *)
-                MInstRet | (* minstret *)
-                MHPM | MIR | MTM | MCY | (* mcounteren *)
-                (* TODO: mcountinhibit *)
-                MScratch | (* mscratch *)
-                MEPC | (* mepc *)
-                MCauseInterrupt | MCauseCode | (* mcause *)
-                MTVal | (* mtval *)
-                (* Supervisor-level CSRs: *)
-                STVecBase | STVecMode | (* stvec *)
-                SHPM | SIR | STM | SCY |
-                SScratch | (* sscratch *)
-                SEPC | (* sepc *)
-                SCauseInterrupt | SCauseCode | (* scause *)
-                STVal | (* stval *)
-                MODE | ASID | PPN | (* satp *)
-                FFlags | FRM (* fflags, frm, fcsr *).
+  | UEPC => WARL
+  | UCauseCode => WLRL
+  | UTVal => WARL
+  | uip_0 | uip_1 | uip_2 => WPRI
 
-*)
+  | fcsr_0 => WPRI
+
+  | sstatus_0 | sstatus_1 | sstatus_2 | sstatus_3
+  | sstatus_4 | sstatus_5 | sstatus_6 => WPRI
+  | SEDeleg => WARL
+  | SIDeleg => WARL
+  | sie_0 | sie_1 | sie_2 | sie_3 => WPRI
+  | STVecBase | STVecMode => WARL
+  | SHPM31 | SHPM30 | SHPM29 | SHPM28 | SHPM27 | SHPM26 | SHPM25 | SHPM24
+  | SHPM23 | SHPM22 | SHPM21 | SHPM20 | SHPM19 | SHPM18 | SHPM17 | SHPM16
+  | SHPM15 | SHPM14 | SHPM13 | SHPM12 | SHPM11 | SHPM10 | SHPM9  | SHPM8
+  | SHPM7  | SHPM6  | SHPM5  | SHPM4  | SHPM3  | SIR | STM | SCY => WARL
+
+  | SEPC => WARL
+  | SCauseCode => WLRL
+  | STVal => WARL
+  | sip_0 | sip_1 | sip_2 | sip_3 => WPRI
+
+  | SATP_MODE | SATP_ASID | SATP_PPN => WARL
+
+  | MVendorID_Bank | MVendorID_Offset => RO
+  | MArchID => RO
+  | MImpID => RO
+  | MHartID => RO
+
+  | SD => RO
+  | MBE | SBE => WARL
+  | SXL | UXL => WARL
+  | TSR | TW | TVM => WARL
+  | XS => RO
+  | FS => WARL
+  | MPP => WARL
+  | SPP => WARL
+  | UBE => WARL
+  | mstatus_0 | mstatus_1 | mstatus_2 | mstatus_3
+  | mstatus_4 | mstatus_5 => WPRI
+  | MXL | Extensions => WARL
+  | misa_0 => WLRL
+  | MEDeleg => WARL
+  | MIDeleg => WARL
+  | mie_0 | mie_1 | mie_2 | mie_3 | mie_4 | mie_5 | mie_6 => WPRI
+  | MTVecBase | MTVecMode => WARL
+  | MHPM31 | MHPM30 | MHPM29 | MHPM28 | MHPM27 | MHPM26 | MHPM25 | MHPM24
+  | MHPM23 | MHPM22 | MHPM21 | MHPM20 | MHPM19 | MHPM18 | MHPM17 | MHPM16
+  | MHPM15 | MHPM14 | MHPM13 | MHPM12 | MHPM11 | MHPM10 | MHPM9  | MHPM8
+  | MHPM7  | MHPM6  | MHPM5  | MHPM4  | MHPM3 | MIR | MTM | MCY => WARL
+
+  | MEPC => WARL
+  | MCauseCode => WLRL
+  | MTVal => WARL
+  | mip_0 | mip_1 | mip_2 | mip_3 | mip_4 | mip_5 | mip_6 => WPRI
+
+  | PMP0Cfg | PMP0Addr | PMP0Null
+  | PMP1Cfg | PMP1Addr | PMP1Null
+  | PMP2Cfg | PMP2Addr | PMP2Null
+  | PMP3Cfg | PMP3Addr | PMP3Null
+  | PMP4Cfg | PMP4Addr | PMP4Null
+  | PMP5Cfg | PMP5Addr | PMP5Null
+  | PMP6Cfg | PMP6Addr | PMP6Null
+  | PMP7Cfg | PMP7Addr | PMP7Null
+  | PMP8Cfg | PMP8Addr | PMP8Null
+  | PMP9Cfg | PMP9Addr | PMP9Null
+  | PMP10Cfg | PMP10Addr | PMP10Null
+  | PMP11Cfg | PMP11Addr | PMP11Null
+  | PMP12Cfg | PMP12Addr | PMP12Null
+  | PMP13Cfg | PMP13Addr | PMP13Null
+  | PMP14Cfg | PMP14Addr | PMP14Null
+  | PMP15Cfg | PMP15Addr | PMP15Null => WARL
+
+  | MHPMI31 | MHPMI30 | MHPMI29 | MHPMI28
+  | MHPMI27 | MHPMI26 | MHPMI25 | MHPMI24
+  | MHPMI23 | MHPMI22 | MHPMI21 | MHPMI20
+  | MHPMI19 | MHPMI18 | MHPMI17 | MHPMI16
+  | MHPMI15 | MHPMI14 | MHPMI13 | MHPMI12
+  | MHPMI11 | MHPMI10 | MHPMI9  | MHPMI8
+  | MHPMI7  | MHPMI6  | MHPMI5  | MHPMI4
+  | MHPMI3  | MIRI | MCYI => WARL
+  | mcountinhibit_0 => WPRI
+  | MHPMEvent3
+  | MHPMEvent4 | MHPMEvent5 | MHPMEvent6 | MHPMEvent7
+  | MHPMEvent8 | MHPMEvent9 | MHPMEvent10 | MHPMEvent11
+  | MHPMEvent12 | MHPMEvent13 | MHPMEvent14 | MHPMEvent15
+  | MHPMEvent16 | MHPMEvent17 | MHPMEvent18 | MHPMEvent19
+  | MHPMEvent20 | MHPMEvent21 | MHPMEvent22 | MHPMEvent23
+  | MHPMEvent24 | MHPMEvent25 | MHPMEvent26 | MHPMEvent27
+  | MHPMEvent28 | MHPMEvent29 | MHPMEvent30 | MHPMEvent31 => WARL
+
+  | _ => RW
+  end.
