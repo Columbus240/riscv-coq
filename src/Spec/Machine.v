@@ -27,9 +27,7 @@ Class RiscvProgram{M}{t}`{Monad M}`{MachineWidth t} := mkRiscvProgram {
   checkReservation : t -> M bool;
 
   getCSRField : CSRField -> M MachineInt;
-  (* Is called unsafe, (presumably) because this allows setting CSRFields to invalid values.
-     MachineInt maybe isn’t a good choice here. riscv-semantic defines it differently.  *)
-  unsafeSetCSRField : CSRField -> MachineInt -> M unit;
+  setCSRField : CSRField -> MachineInt -> M unit;
 
   getPC: M t;
   setPC: t -> M unit;

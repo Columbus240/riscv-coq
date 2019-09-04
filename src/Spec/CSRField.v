@@ -96,15 +96,6 @@ Inductive CSRField :=
   MHPMCounter20 | MHPMCounter21 | MHPMCounter22 | MHPMCounter23 |
   MHPMCounter24 | MHPMCounter25 | MHPMCounter26 | MHPMCounter27 |
   MHPMCounter28 | MHPMCounter29 | MHPMCounter30 | MHPMCounter31 |
-  MCycleH | MInstRetH | (* mcycleh, minstreth *)
-  MHPMCounter3H | (* mhpmcounterNh *)
-  MHPMCounter4H | MHPMCounter5H | MHPMCounter6H | MHPMCounter7H |
-  MHPMCounter8H | MHPMCounter9H | MHPMCounter10H | MHPMCounter11H |
-  MHPMCounter12H | MHPMCounter13H | MHPMCounter14H | MHPMCounter15H |
-  MHPMCounter16H | MHPMCounter17H | MHPMCounter18H | MHPMCounter19H |
-  MHPMCounter20H | MHPMCounter21H | MHPMCounter22H | MHPMCounter23H |
-  MHPMCounter24H | MHPMCounter25H | MHPMCounter26H | MHPMCounter27H |
-  MHPMCounter28H | MHPMCounter29H | MHPMCounter30H | MHPMCounter31H |
 
   MHPMI31 | MHPMI30 | MHPMI29 | MHPMI28 |
   MHPMI27 | MHPMI26 | MHPMI25 | MHPMI24 |

@@ -88,11 +88,12 @@ Inductive CSR :=
   MHPMEvent16 | MHPMEvent17 | MHPMEvent18 | MHPMEvent19 |
   MHPMEvent20 | MHPMEvent21 | MHPMEvent22 | MHPMEvent23 |
   MHPMEvent24 | MHPMEvent25 | MHPMEvent26 | MHPMEvent27 |
-  MHPMEvent28 | MHPMEvent29 | MHPMEvent30 | MHPMEvent31 |
+  MHPMEvent28 | MHPMEvent29 | MHPMEvent30 | MHPMEvent31.
+  (*
   (* Debug/Trace Registers (shared with Debug Mode) *)
   TSelect | TData1 | TData2 | TData3 |
   (* Debug Mode Registers *)
-  DCSR | DPC | DScratch0 | DScratch1.
+  DCSR | DPC | DScratch0 | DScratch1 *)
 
 (* Possible optimisation: Use a datastructure to improve lookup
    speed. *)
@@ -542,6 +543,7 @@ Definition lookupCSR (x : MachineInt) : option CSR :=
   else if Z.eqb x (Ox"33F") then
     Some MHPMEvent31
   (**)
+         (*
   else if Z.eqb x (Ox"7A0") then
     Some TSelect
   else if Z.eqb x (Ox"7A1") then
@@ -558,7 +560,7 @@ Definition lookupCSR (x : MachineInt) : option CSR :=
   else if Z.eqb x (Ox"7B2") then
     Some DScratch0
   else if Z.eqb x (Ox"7B3") then
-    Some DScratch1
+    Some DScratch1 *)
   (**)
   else
     None.
