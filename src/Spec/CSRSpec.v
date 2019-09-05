@@ -84,7 +84,7 @@ Definition getCSR {M}{t}`{RiscvMachine M t} (csr : CSR) : M t :=
     Return (ZToReg (
                 bitSlice fflags 0 5 <|>
       Z.shiftl (bitSlice frm 0 3) 5 <|>
-      Z.shiftl fcsr_0 8
+      Z.shiftl (bitSlice fcsr_0 0 24) 8
     ))
   | Cycle | CSR.MCycle =>
     cycle <- getCSRField MCycle ;
@@ -536,8 +536,49 @@ Definition getCSR {M}{t}`{RiscvMachine M t} (csr : CSR) : M t :=
   | CSR.MHPMEvent31 => event <- getCSRField MHPMEvent31 ; Return (ZToReg event)
   end.
 
-Definition setCSR {M}{t}`{RiscvMachine M t} (csr : CSR) (val : t) : M unit :=
+(* TODO: Implement this only for writeable CSRFields, using the type
+   system of Coq. *)
+Definition setCSR {M}{t}`{RiscvMachine M t} (csr : CSR) (val : MachineInt) : M unit :=
   match csr with
-    (* TODO: Implement this. *)
+  | UStatus =>
+    setCSRField UIE (bitSlice val 0 1) ;;
+    setCSRField ustatus_1 (bitSlice val 1 4) ;;
+    setCSRField UPIE (bitSlice val 4 5) ;;
+    setCSRField ustatus_0 (Z.shiftr val 5)
+  | CSR.UIE =>
+    setCSRField USIE (bitSlice val 0 1) ;;
+    setCSRField uie_2 (bitSlice val 1 4) ;;
+    setCSRField UTIE (bitSlice val 4 5) ;;
+    setCSRField uie_1 (bitSlice val 5 8) ;;
+    setCSRField UEIE (bitSlice val 8 9) ;;
+    setCSRField uie_0 (Z.shiftr val 9)
+  | UTVec =>
+    setCSRField UTVecMode (bitSlice val 0 2) ;;
+    setCSRField UTVecBase (Z.shiftr val 2)
+  | CSR.UScratch =>
+    setCSRField UScratch val
+  | CSR.UEPC =>
+    setCSRField UEPC val
+  | UCause =>
+    (* To be defined. *)
+    Return tt
+  | CSR.UTVal =>
+    setCSRField UTVal val
+  | CSR.UIP =>
+    setCSRField USIP (bitSlice val 0 1) ;;
+    setCSRField uip_2 (bitSlice val 1 4) ;;
+    setCSRField UTIP (bitSlice val 4 5) ;;
+    setCSRField uip_1 (bitSlice val 5 8) ;;
+    setCSRField UEIP (bitSlice val 8 9) ;;
+    setCSRField uip_0 (Z.shiftr val 9)
+  | CSR.FFlags =>
+    setCSRField FFlags (bitSlice val 0 5)
+  | CSR.FRM =>
+    setCSRField FRM (bitSlice val 0 3)
+  | FCSR =>
+    setCSRField FFlags (bitSlice val 0 5) ;;
+    setCSRField FRM (bitSlice val 5 8) ;;
+    setCSRField fcsr_0 (bitSlice val 8 31)
   | _ => Return tt
+  (* TODO: Implement the rest. *)
   end.
